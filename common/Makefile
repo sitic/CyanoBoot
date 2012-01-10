@@ -80,8 +80,3 @@ sinclude .depend
 
 #########################################################################
 
-ifeq ($(BOARD),omap4430sdp)
-# Pull in the default kernel command line
-include $(TOPDIR)/../../../device/ti/blaze/BoardConfig.mk
-CFLAGS += -DBOARD_KERNEL_CMDLINE="$(BOARD_KERNEL_CMDLINE)"
-endif

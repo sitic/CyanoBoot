@@ -1838,6 +1838,9 @@ omap4430sdp_config :    unconfig
 		echo "Configuring for OMAP4 Tablet .... "; \
 	fi;
 
+nt2ndboot_sd_config :    unconfig
+	@./mkconfig $(@:_config=) arm omap4 nt2ndboot
+
 omap4430panda_config :    unconfig
 	@./mkconfig $(@:_config=) arm omap4 omap4430panda
 
