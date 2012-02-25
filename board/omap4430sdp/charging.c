@@ -37,8 +37,9 @@
 #define GPIO_BL_PWR_EN	38
 #define GPIO_LCD_BL_PWM	143
 
+#define GPIO_CHG_DOK	81
 #define GPIO_CHG_IUSB	83
-#define GPIO_CHG_EN		60
+#define GPIO_CHG_EN	60
 
 #define GPIO_CHG_USUS_EVT1A		96
 #define GPIO_DC_CHG_ILM_EVT1A	97	
@@ -84,7 +85,7 @@ static int init_batt(void)
 		// Due to issue in factory with corrupt eMMC
 		// prevent access to eMMC in case of SD_BOOT
 		ret = max17042_init(!running_from_sd());
-		
+
 		if (ret == 0) {
 			break;
 		}
@@ -101,6 +102,7 @@ static void charger_enable(enum charge_level_t level, int emergency_charge)
 {
 	int chg_usus = GPIO_CHG_USUS_EVT1A;
 	int dc_chg_ilm = GPIO_DC_CHG_ILM_EVT1A;
+	int chg_dok = GPIO_CHG_DOK;
 
 	if (get_board_revision() >= ACCLAIM_DVT) {
 		printf("Identified DVT or newer, using its charging GPIOs\n");
@@ -116,6 +118,10 @@ static void charger_enable(enum charge_level_t level, int emergency_charge)
 		// In case of emergency charge only do 500mA
 		level = CHARGE_500mA;
 	}
+
+	// Detect the cable used. If normal USB cable, limit to 500mA
+	if ((level == CHARGE_1800mA) && gpio_read(chg_dok))
+		level = CHARGE_500mA;
 
 	switch(level) {
 	case CHARGE_DISABLE:
